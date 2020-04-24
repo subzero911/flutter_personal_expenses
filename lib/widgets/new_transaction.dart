@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:personal_expenses/widgets/adaptive_flat_button.dart';
 
 typedef void AddTxFunc(String title, double amount, DateTime chosenDate);
 
@@ -29,13 +33,13 @@ class _NewTransactionState extends State<NewTransaction> {
     widget.addTx(
       _titleController.text,
       double.parse(_amountController.text),
-      _selectedDate,      
-      );
+      _selectedDate,
+    );
 
     Navigator.of(context).pop();
   }
 
-  void _presendDatePicker() {
+  void _presentDatePicker() {
     showDatePicker(
             context: context,
             initialDate: DateTime.now(),
@@ -53,54 +57,55 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5.0,
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            TextField(
-              decoration: InputDecoration(labelText: 'Title'),
-              controller: _titleController,
-              onSubmitted: (_) => _submitData(),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Amount'),
-              controller: _amountController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onSubmitted: (_) => _submitData(),
-            ),
-            // календарик
-            Container(
-              height: 70,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(_selectedDate == null
-                        ? 'No date chosen!'
-                        : 'Picked date: ${DateFormat.yMd().format(_selectedDate)}'),
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      "Choose date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: _presendDatePicker,
-                  )
-                ],
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5.0,
+        child: Container(
+          padding: EdgeInsets.only(
+              top: 10.0,
+              left: 10.0,
+              right: 10.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(labelText: 'Title'),
+                controller: _titleController,
+                onSubmitted: (_) => _submitData(),
               ),
-            ),
-            RaisedButton(
-              child: Text('Add transaction'),
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).textTheme.button.color,
-              onPressed: _submitData,
-            ),
-          ],
+              TextField(
+                decoration: InputDecoration(labelText: 'Amount'),
+                controller: _amountController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                onSubmitted: (_) => _submitData(),
+              ),
+              // календарик
+              Container(
+                height: 70,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(_selectedDate == null
+                          ? 'No date chosen!'
+                          : 'Picked date: ${DateFormat.yMd().format(_selectedDate)}'),
+                    ),
+                    // кнопка выглядит по-разному на Android и iOS
+                    AdaptiveFlatButton(
+                      "Choose date",
+                      handler: _presentDatePicker,
+                    ),
+                  ],
+                ),
+              ),
+              RaisedButton(
+                child: Text('Add transaction'),
+                color: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).textTheme.button.color,
+                onPressed: _submitData,
+              ),
+            ],
+          ),
         ),
       ),
     );
